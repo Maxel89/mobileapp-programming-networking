@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">Networking</string>
+    <string name="Refresh">Refresh</string>
+    <string name="Title_mountains">Mountains</string>
+    <string name="mountains">Mountains</string>
 </resources>

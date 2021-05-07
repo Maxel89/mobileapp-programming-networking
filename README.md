@@ -1,42 +1,150 @@
 
-# Rapport
-
-**Skriv din rapport här!**
-
-_Du kan ta bort all text som finns sedan tidigare_.
-
-## Följande grundsyn gäller dugga-svar:
-
-- Ett kortfattat svar är att föredra. Svar som är längre än en sida text (skärmdumpar och programkod exkluderat) är onödigt långt.
-- Svaret skall ha minst en snutt programkod.
-- Svaret skall inkludera en kort övergripande förklarande text som redogör för vad respektive snutt programkod gör eller som svarar på annan teorifråga.
-- Svaret skall ha minst en skärmdump. Skärmdumpar skall illustrera exekvering av relevant programkod. Eventuell text i skärmdumpar måste vara läsbar.
-- I de fall detta efterfrågas, dela upp delar av ditt svar i för- och nackdelar. Dina för- respektive nackdelar skall vara i form av punktlistor med kortare stycken (3-4 meningar).
-
-Programkod ska se ut som exemplet nedan. Koden måste vara korrekt indenterad då den blir lättare att läsa vilket gör det lättare att hitta syntaktiska fel.
-
+First I created the list view.
 ```
-function errorCallback(error) {
-    switch(error.code) {
-        case error.PERMISSION_DENIED:
-            // Geolocation API stöds inte, gör något
-            break;
-        case error.POSITION_UNAVAILABLE:
-            // Misslyckat positionsanrop, gör något
-            break;
-        case error.UNKNOWN_ERROR:
-            // Okänt fel, gör något
-            break;
+    <ListView
+        android:id="@+id/listView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    </ListView>
+```
+
+Then I created the class Mountain with the getters so that I could call on these in the activity to display the value of the different member values.
+I also overwrote the toString function to display the name of the mountain instead of the address.
+```
+    public String getId(){
+        return id;
     }
-}
+
+    public String getName(){
+        return name;
+    }
+
+    public String getType(){
+        return type;
+    }
+
+    public String getCompany(){
+        return company;
+    }
+
+    public String getLocation(){
+        return location;
+    }
+
+    public String getCategory(){
+        return category;
+    }
+
+    public int getSize(){
+        return size;
+    }
+
+    public int getCost(){
+        return cost;
+    }
+
+    public String getLink(){
+        return link;
+    }
+
+    public String getImage(){
+        return image;
+    }
+
+    public String toString(){
+        return name;
+    }
 ```
 
-Bilder läggs i samma mapp som markdown-filen.
+In the MainActivity I defined a array list and a array adapter before creating them in the onCreate function.
+```
+    ArrayList<Mountain> mountains;
+    ArrayAdapter<Mountain> adapter;
+```
 
-![](android.png)
+```
+        mountains = new ArrayList<Mountain>();
+        adapter = new ArrayAdapter<Mountain>(this, android.R.layout.simple_list_item_1, mountains);
+```
 
-Läs gärna:
+Added the JsonTask class to get the string from the webservice, this class is then created in the "top" class MainActivity and executed.
+This class returns a JSON object.
+```
+    private class JsonTask extends AsyncTask<String, String, String> {
 
-- Boulos, M.N.K., Warren, J., Gong, J. & Yue, P. (2010) Web GIS in practice VIII: HTML5 and the canvas element for interactive online mapping. International journal of health geographics 9, 14. Shin, Y. &
-- Wunsche, B.C. (2013) A smartphone-based golf simulation exercise game for supporting arthritis patients. 2013 28th International Conference of Image and Vision Computing New Zealand (IVCNZ), IEEE, pp. 459–464.
-- Wohlin, C., Runeson, P., Höst, M., Ohlsson, M.C., Regnell, B., Wesslén, A. (2012) Experimentation in Software Engineering, Berlin, Heidelberg: Springer Berlin Heidelberg.
+        private HttpURLConnection connection = null;
+        private BufferedReader reader = null;
+
+        protected String doInBackground(String... params) {
+            try {
+                URL url = new URL(params[0]);
+                connection = (HttpURLConnection) url.openConnection();
+                connection.connect();
+
+                InputStream stream = connection.getInputStream();
+                reader = new BufferedReader(new InputStreamReader(stream));
+
+                StringBuilder builder = new StringBuilder();
+                String line;
+                while ((line = reader.readLine()) != null && !isCancelled()) {
+                    builder.append(line).append("\n");
+                }
+                return builder.toString();
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                if (connection != null) {
+                    connection.disconnect();
+                }
+                try {
+                    if (reader != null) {
+                        reader.close();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            return null;
+        }
+
+```
+
+The JSON object is then past to the onPostExecute function in the JsonTask class
+
+```
+                JSONArray jsonArray = (JSONArray) new JSONTokener(json).nextValue();
+                for (int i = 0; i < jsonArray.length(); i++){
+                    JSONObject element = jsonArray.optJSONObject(i);
+                    String ID = element.getString("ID");
+                    String name = element.getString("name");
+                    String type = element.getString("type");
+                    String company = element.getString("company");
+                    String location = element.getString("location");
+                    String category = element.getString("category");
+                    int size = element.getInt("size");
+                    int cost = element.getInt("cost");
+                    String wiki = element.getJSONObject("auxdata").getString("wiki");
+                    String img = element.getJSONObject("auxdata").getString("img");
+                    mountains.add(new Mountain(ID,name,type,company,location,category,size,cost,wiki,img));
+```
+
+Lastly the list view is created and the on click listener is defined.
+```
+ListView listView = findViewById(R.id.listView);
+        listView.setAdapter(adapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Mountain mt = mountains.get(position);
+                final Snackbar snackbar = Snackbar.make(findViewById(R.id.listView),
+                        mt.getName() + " (" + mt.getLocation() + ")" + "\n" + "Height: " + mt.getSize() + " Price: " + mt.getCost(),
+                        10000);
+                snackbar.setAction("Close", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        snackbar.dismiss();
+                    }
+                });
+                snackbar.show();
+```
