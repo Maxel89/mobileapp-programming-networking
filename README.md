@@ -19,41 +19,6 @@ I also overwrote the toString function to display the name of the mountain inste
         return name;
     }
 
-    public String getType(){
-        return type;
-    }
-
-    public String getCompany(){
-        return company;
-    }
-
-    public String getLocation(){
-        return location;
-    }
-
-    public String getCategory(){
-        return category;
-    }
-
-    public int getSize(){
-        return size;
-    }
-
-    public int getCost(){
-        return cost;
-    }
-
-    public String getLink(){
-        return link;
-    }
-
-    public String getImage(){
-        return image;
-    }
-
-    public String toString(){
-        return name;
-    }
 ```
 
 In the MainActivity I defined a array list and a array adapter before creating them in the onCreate function.
@@ -68,7 +33,7 @@ In the MainActivity I defined a array list and a array adapter before creating t
 ```
 
 Added the JsonTask class to get the string from the webservice, this class is then created in the "top" class MainActivity and executed.
-This class returns a JSON object.
+This class returns a JSON object (I was not aware GSON was an option, this information has passed me by).
 ```
     private class JsonTask extends AsyncTask<String, String, String> {
 
