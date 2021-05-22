@@ -76,7 +76,8 @@ This class returns a JSON object (I was not aware GSON was an option, this infor
 
 ```
 
-The JSON object is then past to the onPostExecute function in the JsonTask class
+The JSON object is then past to the onPostExecute function in the JsonTask class to parse this to the java class Mountain
+by dividing the JSONArray into strings and ints.
 
 ```
                 JSONArray jsonArray = (JSONArray) new JSONTokener(json).nextValue();
