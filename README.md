@@ -8,6 +8,8 @@ First I created the list view.
     </ListView>
 ```
 
+![Alt text](Screenshot_1621770914.png?raw=true "List view")
+
 Then I created the class Mountain with the getters so that I could call on these in the activity to display the value of the different member values.
 I also overwrote the toString function to display the name of the mountain instead of the address.
 ```
@@ -114,3 +116,5 @@ ListView listView = findViewById(R.id.listView);
                 });
                 snackbar.show();
 ```
+
+![Alt text](Screenshot_1621770924.png?raw=true "Snackbar view")
